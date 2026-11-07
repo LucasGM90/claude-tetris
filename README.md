@@ -25,6 +25,7 @@ Implementación del clásico **Tetris** en JavaScript vanilla, usando HTML5 Canv
   - [Tecnologías](#tecnologías)
   - [Estructura del proyecto](#estructura-del-proyecto)
   - [Personalización](#personalización)
+  - [Triage automático de issues](#triage-automático-de-issues)
   - [Licencia](#licencia)
 
 ---
@@ -178,6 +179,21 @@ Algunos parámetros fáciles de tunear en `game.js`:
 | `dropInterval` | Velocidad inicial de caída en ms         | `1000`                |
 
 > Si cambias `COLS`, `ROWS` o `BLOCK`, recuerda ajustar también `width` y `height` del `<canvas id="board">` en `index.html` para que coincida (`COLS × BLOCK` × `ROWS × BLOCK`).
+
+---
+
+## Triage automático de issues
+
+El workflow `.github/workflows/claude-issue-triage.yml` analiza con Claude cada issue nuevo y cada edición del título o del cuerpo del issue. Hace dos cosas:
+
+1. **Asigna labels** de un set fijo (el workflow los crea si no existen):
+   - Tipo: `bug`, `enhancement`, `question`, `documentation`
+   - Área: `area: gameplay`, `area: rendering`, `area: controls`, `area: ui-hud`, `area: docs`, `area: ci`
+   - Prioridad: `priority: high`, `priority: medium`, `priority: low`
+   - `needs-info`: falta información para diagnosticar
+2. **Publica un diagnóstico** en un único comentario (resumen, causa probable, código involucrado, propuesta de implementación, riesgos y cómo verificar). Si el issue se edita, el mismo comentario se actualiza y los labels se recalculan.
+
+Requiere el secret `CLAUDE_CODE_OAUTH_TOKEN` del repositorio. Los labels que se agreguen a mano fuera de este set no se modifican.
 
 ---
 
