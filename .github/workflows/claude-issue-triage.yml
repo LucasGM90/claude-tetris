@@ -106,6 +106,16 @@ jobs:
             - **Información faltante / preguntas**: datos que habría que pedirle a quien reportó (omitir si no hace falta).
             - **Cómo verificar**: pasos manuales en el navegador para comprobar la solución.
 
+            ### Formato de `triage/diagnosis.md`
+            El archivo se publica tal cual como comentario en GitHub, así que debe estar en GitHub Flavored Markdown (GFM) válido:
+            - Encabezados `##` para cada sección, en el orden indicado, sin `#` de nivel 1 ni HTML crudo.
+            - Referencias a código en `` `código` `` inline (por ejemplo `` `game.js:120` ``, `` `collide()` ``). Los fragmentos de código van en bloques con triple backtick y lenguaje (```` ```js ````, ```` ```html ````, ```` ```css ````); si el fragmento contiene triple backtick, usá cuatro.
+            - La **Clasificación** como tabla GFM (`| Campo | Valor | Justificación |`), una fila por tipo, área y prioridad.
+            - La **Propuesta de implementación** como lista numerada (`1.`, `2.`, …).
+            - **Cómo verificar** como lista de tareas (`- [ ] paso`).
+            - Listas con `-`, líneas en blanco entre bloques, negritas con `**` y sin saltos de línea dentro de una celda de tabla.
+            - No envuelvas todo el documento en un bloque de código ni agregues texto fuera del markdown (sin saludos ni explicaciones sobre el archivo).
+
             Sé conciso y específico. No inventes funciones ni líneas que no existan en el código.
 
       - name: Aplicar labels y publicar el diagnóstico
