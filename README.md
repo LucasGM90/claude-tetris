@@ -42,6 +42,7 @@ Es una versión jugable del Tetris clásico con todas las mecánicas que esperar
 - **Vista previa** de la siguiente pieza.
 - **Sistema de puntuación** clásico de Tetris (100 / 300 / 500 / 800 multiplicado por nivel).
 - **Niveles** que aumentan cada 10 líneas y aceleran la caída.
+- **Piezas especiales**: de forma ocasional (10 %) aparece un pentominó (+, U, Y) o una pieza 3×3 hueca; tras un Tetris (4 líneas) la siguiente pieza es un bloque 1×1 de recompensa.
 - **Power-ups**: cada 5 líneas la siguiente pieza es un bloque especial (ver abajo).
 - **Pausa** y **Game Over** con opción de reinicio.
 

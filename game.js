@@ -14,6 +14,11 @@ const COLORS = [
   '#7986cb', // J - indigo
   '#ffb74d', // L - orange
   '#eceff1', // 8 - comodín (solo en el tablero, nunca sale de randomPiece)
+  '#f06292', // 9 - pentominó +
+  '#26a69a', // 10 - pentominó U
+  '#9ccc65', // 11 - pentominó Y
+  '#ffffff', // 12 - single 1x1 (recompensa)
+  '#ff8a65', // 13 - 3x3 hueca (reto)
 ];
 
 const WILD = 8;
@@ -41,6 +46,16 @@ const PIECES = [
   [[0,0,7],[7,7,7],[0,0,0]],                  // L
 ];
 
+// Piezas especiales (no tetrominós). Su índice de tipo = índice de color.
+const SPECIAL_CHANCE = 0.1; // probabilidad por pieza de que salga un pentominó o la hueca
+const SPECIAL_PIECES = [
+  [[0,9,0],[9,9,9],[0,9,0]],                          // pentominó +
+  [[10,0,10],[10,10,10],[0,0,0]],                     // pentominó U
+  [[0,11,0,0],[11,11,11,11],[0,0,0,0],[0,0,0,0]],     // pentominó Y
+  [[13,13,13],[13,0,13],[13,13,13]],                  // 3x3 hueca
+];
+const SINGLE_TYPE = 12;
+
 const LINE_SCORES = [0, 100, 300, 500, 800];
 
 const canvas = document.getElementById('board');
@@ -60,7 +75,7 @@ const themeToggle = document.getElementById('theme-toggle');
 const THEME_KEY = 'tetris-theme';
 let gridColor = '#22222e';
 
-let board, current, next, score, lines, level, paused, gameOver, lastTime, dropAccum, dropInterval, animId, nextPowerupAt, freezeLeft, powerMsg;
+let rewardSingle, board, current, next, score, lines, level, paused, gameOver, lastTime, dropAccum, dropInterval, animId, nextPowerupAt, freezeLeft, powerMsg;
 
 function createBoard() {
   return Array.from({ length: ROWS }, () => new Array(COLS).fill(0));
@@ -73,8 +88,19 @@ function randomPiece() {
     // Power-up: bloque único (el valor de la celda solo importa para collide/ghost)
     return { type: 0, power, shape: [[1]], x: Math.floor(COLS / 2), y: 0 };
   }
-  const type = Math.floor(Math.random() * 7) + 1;
-  const shape = PIECES[type].map(row => [...row]);
+  let type, shape;
+  if (rewardSingle) {
+    // Recompensa tras un Tetris: bloque 1x1
+    rewardSingle = false;
+    type = SINGLE_TYPE;
+    shape = [[SINGLE_TYPE]];
+  } else if (Math.random() < SPECIAL_CHANCE) {
+    shape = SPECIAL_PIECES[Math.floor(Math.random() * SPECIAL_PIECES.length)].map(row => [...row]);
+    type = shape.flat().find(v => v);
+  } else {
+    type = Math.floor(Math.random() * 7) + 1;
+    shape = PIECES[type].map(row => [...row]);
+  }
   return { type, shape, x: Math.floor(COLS / 2) - Math.floor(shape[0].length / 2), y: 0 };
 }
 
@@ -142,6 +168,7 @@ function clearLines() {
   }
   if (cleared) {
     lines += cleared;
+    if (cleared === 4) rewardSingle = true;
     score += (LINE_SCORES[cleared] || 0) * level;
     level = Math.floor(lines / 10) + 1;
     dropInterval = Math.max(100, 1000 - (level - 1) * 90);
@@ -405,6 +432,7 @@ function init() {
   dropAccum = 0;
   nextPowerupAt = POWERUP_EVERY;
   freezeLeft = 0;
+  rewardSingle = false;
   powerMsg = '';
   lastTime = performance.now();
   next = randomPiece();
