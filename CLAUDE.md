@@ -25,9 +25,11 @@ There is no build or test command; verify changes by playing in the browser.
 - `loop()` runs on `requestAnimationFrame` and accumulates `dropAccum` against `dropInterval`. Pause and game over stop it with `cancelAnimationFrame(animId)`; resuming calls `loop()` again with a fresh `lastTime`.
 - One `#overlay` element is reused for both PAUSA and GAME OVER; its text is set in `togglePause()` and `endGame()`.
 - HUD DOM updates only happen in `updateHUD()`.
+- **Records**: `started` stays false until the start screen's Jugar button is clicked; the load-time `init()` is immediately followed by `cancelAnimationFrame` + `showStartScreen()`, and the keydown handler / `togglePause()` ignore input while `!started`. Top 5 lives in localStorage `tetris-records` (`{name, score, lines, combo}`), and best combo / max lines across all games in `tetris-records-best`; always go through `loadRecords()`/`loadBest()` (they tolerate corrupt JSON) and render with `renderRecords()` (textContent only). `combo`/`bestCombo` are updated in `clearLines()` and reset in `init()`. Keydown ignores events from the name `<input>`.
 
 ## Coupled values
 
 - `#board` canvas size in `index.html` must equal `COLS*BLOCK × ROWS*BLOCK` (300×600).
 - `drawNext()` assumes a 4×4 preview grid with 30px cells, matching `#next-canvas` at 120×120.
+- The `maxlength` of `#name-input` in `index.html` must equal `NAME_MAX` in `game.js`.
 - The control list in `index.html` and the README's controls table describe the keydown handler at the bottom of `game.js`; keep all three in sync.

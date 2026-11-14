@@ -45,6 +45,7 @@ Es una versión jugable del Tetris clásico con todas las mecánicas que esperar
 - **Piezas especiales**: de forma ocasional (10 %) aparece un pentominó (+, U, Y) o una pieza 3×3 hueca; tras un Tetris (4 líneas) la siguiente pieza es un bloque 1×1 de recompensa.
 - **Power-ups**: cada 5 líneas la siguiente pieza es un bloque especial (ver abajo).
 - **Pausa** y **Game Over** con opción de reinicio.
+- **Tabla de records local**: pantalla de inicio con el top 5 (guardado en `localStorage`, clave `tetris-records`), campo de nombre al hacer Game Over si la puntuación entra en el top (se resalta), mejor combo (bloqueos consecutivos que eliminan líneas), máximo de líneas y botón «Borrar records».
 
 ### Power-ups
 
