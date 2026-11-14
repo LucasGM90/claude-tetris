@@ -25,6 +25,7 @@ There is no build or test command; verify changes by playing in the browser.
 - `loop()` runs on `requestAnimationFrame` and accumulates `dropAccum` against `dropInterval`. Pause and game over stop it with `cancelAnimationFrame(animId)`; resuming calls `loop()` again with a fresh `lastTime`.
 - One `#overlay` element is reused for both PAUSA and GAME OVER; its text is set in `togglePause()` and `endGame()`.
 - HUD DOM updates only happen in `updateHUD()`.
+- **Skins**: the `SKINS` table (retro, neon, pastel, pixel) holds per-skin `colors` (same indexing as `COLORS`, so `skin.colors[cellValue]`), `grid`/`bg` overrides (null = light/dark theme values; Neon forces a black bg), `star` color and `paint()`. `drawBlock`/`drawPowerBlock` delegate to the active `skin`; `applySkin(name)` swaps it, sets canvas backgrounds, redraws explicitly (loop is cancelled while paused) and persists to `localStorage` key `tetris-skin`. New skins must reset `shadowBlur`/`shadowColor` after drawing.
 
 ## Coupled values
 

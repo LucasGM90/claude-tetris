@@ -44,6 +44,7 @@ Es una versión jugable del Tetris clásico con todas las mecánicas que esperar
 - **Niveles** que aumentan cada 10 líneas y aceleran la caída.
 - **Piezas especiales**: de forma ocasional (10 %) aparece un pentominó (+, U, Y) o una pieza 3×3 hueca; tras un Tetris (4 líneas) la siguiente pieza es un bloque 1×1 de recompensa.
 - **Power-ups**: cada 5 líneas la siguiente pieza es un bloque especial (ver abajo).
+- **Skins** (selector arriba a la derecha): Retro (colores planos), Neon (fondo negro con brillo), Pastel (colores suaves y bordes redondeados) y Pixel art (textura de píxeles). Se aplica al instante y se recuerda en `localStorage`.
 - **Pausa** y **Game Over** con opción de reinicio.
 
 ### Power-ups
