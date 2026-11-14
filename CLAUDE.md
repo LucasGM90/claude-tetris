@@ -23,7 +23,7 @@ There is no build or test command; verify changes by playing in the browser.
 - Locking pipeline: `lockPiece()` → `merge()` → `clearLines()` (updates score, level and `dropInterval = max(100, 1000 - (level-1)*90)`) → `spawn()` (game over if the new piece collides immediately).
 - **Power-ups**: every `POWERUP_EVERY` lines `randomPiece()` returns a 1×1 piece with a `power` key (`POWERUPS` table) instead of a tetromino. `lockPiece()` calls `applyPowerUp()` instead of `merge()` for it. Freeze is the `freezeLeft` timer consumed in `loop()` (it only decrements while the loop runs, so pause doesn't burn it). `rowComplete()` is the line-completion rule (wildcards count double).
 - `loop()` runs on `requestAnimationFrame` and accumulates `dropAccum` against `dropInterval`. Pause and game over stop it with `cancelAnimationFrame(animId)`; resuming calls `loop()` again with a fresh `lastTime`.
-- One `#overlay` element is reused for both PAUSA and GAME OVER; its text is set in `togglePause()` and `endGame()`.
+- One `#overlay` element is reused for both PAUSA and GAME OVER; its text is set in `togglePause()` and `endGame()`. PAUSA shows `#pause-menu` (Reanudar / Reiniciar / Ver controles / Nivel inicial -> `startLevel`, persisted in `tetris-start-level`); `#controls-view` is its submenu (`showMenuView()`). GAME OVER shows only `#restart-btn`. P or Escape toggles the menu (Escape in the submenu goes back). `heldKeys`/`ignoredKeys` drop keys still held when resuming or restarting. `level = startLevel + floor(lines/10)`.
 - HUD DOM updates only happen in `updateHUD()`.
 
 ## Coupled values
