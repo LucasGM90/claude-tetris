@@ -46,6 +46,7 @@ Es una versión jugable del Tetris clásico con todas las mecánicas que esperar
 - **Power-ups**: cada 5 líneas la siguiente pieza es un bloque especial (ver abajo).
 - **Pausa** y **Game Over** con opción de reinicio.
 - **Tabla de récords** local (`localStorage`): top 5 con nombre del jugador, mejor combo (rachas de piezas seguidas que limpian líneas) y máximo de líneas en una partida. Se muestra en la pantalla de inicio y al terminar la partida, resalta tu posición y se puede borrar con el botón «Borrar récords».
+- **Skins**: selector en la esquina superior izquierda (Retro, Neon, Pastel, Pixel art). Se aplica al instante y se guarda en `localStorage`.
 
 ### Power-ups
 
