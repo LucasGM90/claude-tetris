@@ -46,6 +46,7 @@ Es una versión jugable del Tetris clásico con todas las mecánicas que esperar
 - **Power-ups**: cada 5 líneas la siguiente pieza es un bloque especial (ver abajo).
 - **Menú de pausa** (`P` o `Esc`): Reanudar, Reiniciar, Ver controles y selector de **nivel inicial** (1–10) para las próximas partidas. Mientras está abierto, el juego ignora los controles.
 - **Game Over** con opción de reinicio.
+- **Tabla de records local**: top 5 de puntuaciones con nombre (se pide al hacer Game Over si entras en el top), mejor combo (líneas seguidas en piezas consecutivas) y máximo de líneas. Se guarda en `localStorage` y se muestra bajo el tablero y en el Game Over; hay un botón para resetearla.
 
 ### Power-ups
 
