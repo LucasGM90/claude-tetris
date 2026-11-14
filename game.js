@@ -780,4 +780,4 @@ let savedSkin = null;
 try { savedSkin = localStorage.getItem(SKIN_KEY); } catch (e) { /* ignorar */ }
 applySkin(savedSkin);
 
-showStart();;
+showStart();
