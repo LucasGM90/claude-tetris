@@ -4,22 +4,111 @@ const COLS = 10;
 const ROWS = 20;
 const BLOCK = 30;
 
-const COLORS = [
-  null,
-  '#4dd0e1', // I - cyan
-  '#ffd54f', // O - yellow
-  '#ba68c8', // T - purple
-  '#81c784', // S - green
-  '#e57373', // Z - red
-  '#7986cb', // J - indigo
-  '#ffb74d', // L - orange
-  '#eceff1', // 8 - comodín (solo en el tablero, nunca sale de randomPiece)
-  '#f06292', // 9 - pentominó +
-  '#26a69a', // 10 - pentominó U
-  '#9ccc65', // 11 - pentominó Y
-  '#ffffff', // 12 - single 1x1 (recompensa)
-  '#ff8a65', // 13 - 3x3 hueca (reto)
-];
+// Cada skin define su paleta (mismo orden que los índices de tipo: COLORS[cellValue])
+// y su función `paint` que dibuja un bloque en la celda (px, py) de lado `size`.
+const SKINS = {
+  retro: {
+    name: 'Retro',
+    colors: [
+      null,
+      '#4dd0e1', // I - cyan
+      '#ffd54f', // O - yellow
+      '#ba68c8', // T - purple
+      '#81c784', // S - green
+      '#e57373', // Z - red
+      '#7986cb', // J - indigo
+      '#ffb74d', // L - orange
+      '#eceff1', // 8 - comodín (solo en el tablero, nunca sale de randomPiece)
+      '#f06292', // 9 - pentominó +
+      '#26a69a', // 10 - pentominó U
+      '#9ccc65', // 11 - pentominó Y
+      '#ffffff', // 12 - single 1x1 (recompensa)
+      '#ff8a65', // 13 - 3x3 hueca (reto)
+    ],
+    wildMark: '#7986cb',
+    paint(c, px, py, s, color) {
+      c.fillStyle = color;
+      c.fillRect(px + 1, py + 1, s - 2, s - 2);
+      c.fillStyle = 'rgba(255,255,255,0.12)';
+      c.fillRect(px + 1, py + 1, s - 2, 4);
+    },
+  },
+  neon: {
+    name: 'Neon',
+    grid: '#1a1a2a',
+    colors: [
+      null,
+      '#00e5ff', '#ffee00', '#d500f9', '#00ff6a', '#ff1744', '#536dfe', '#ff9100',
+      '#ffffff', '#ff4081', '#1de9b6', '#c6ff00', '#ffffff', '#ff6e40',
+    ],
+    wildMark: '#000000',
+    paint(c, px, py, s, color) {
+      const m = Math.max(2, Math.round(s * 0.1));
+      c.save();
+      c.shadowColor = color;
+      c.shadowBlur = s * 0.5;
+      c.fillStyle = 'rgba(0,0,0,0.85)';
+      c.fillRect(px + m, py + m, s - 2 * m, s - 2 * m);
+      c.strokeStyle = color;
+      c.lineWidth = 2;
+      c.strokeRect(px + m, py + m, s - 2 * m, s - 2 * m);
+      c.shadowBlur = 0;
+      c.globalAlpha *= 0.55;
+      c.fillStyle = color;
+      c.fillRect(px + m + 3, py + m + 3, s - 2 * m - 6, s - 2 * m - 6);
+      c.restore();
+    },
+  },
+  pastel: {
+    name: 'Pastel',
+    colors: [
+      null,
+      '#a8e6ef', '#fff1b8', '#d9b8e6', '#bfe8c3', '#f5b7b7', '#b8c0f0', '#ffd9a8',
+      '#f4f6f8', '#f8bbd0', '#a5dfd8', '#d4eab0', '#ffffff', '#ffccbc',
+    ],
+    wildMark: '#9fa8da',
+    paint(c, px, py, s, color) {
+      c.fillStyle = color;
+      c.beginPath();
+      c.roundRect(px + 2, py + 2, s - 4, s - 4, s * 0.3);
+      c.fill();
+      c.fillStyle = 'rgba(255,255,255,0.35)';
+      c.beginPath();
+      c.roundRect(px + 5, py + 4, s - 10, s * 0.22, s * 0.1);
+      c.fill();
+    },
+  },
+  pixel: {
+    name: 'Pixel art',
+    colors: [
+      null,
+      '#29b6f6', '#fbc02d', '#8e24aa', '#43a047', '#e53935', '#3949ab', '#fb8c00',
+      '#cfd8dc', '#ec407a', '#00897b', '#7cb342', '#ffffff', '#f4511e',
+    ],
+    wildMark: '#3949ab',
+    paint(c, px, py, s, color) {
+      const u = Math.max(2, Math.round(s / 8)); // "píxel" del bloque
+      const n = Math.floor(s / u);
+      c.fillStyle = color;
+      c.fillRect(px, py, s, s);
+      // textura de tablero de ajedrez sutil
+      c.fillStyle = 'rgba(255,255,255,0.12)';
+      for (let i = 1; i < n - 1; i++)
+        for (let j = 1; j < n - 1; j++)
+          if ((i + j) % 2 === 0) c.fillRect(px + i * u, py + j * u, u, u);
+      // borde luminoso arriba/izquierda y sombra abajo/derecha
+      c.fillStyle = 'rgba(255,255,255,0.45)';
+      c.fillRect(px, py, s, u);
+      c.fillRect(px, py, u, s);
+      c.fillStyle = 'rgba(0,0,0,0.4)';
+      c.fillRect(px, py + s - u, s, u);
+      c.fillRect(px + s - u, py, u, s);
+    },
+  },
+};
+const SKIN_KEY = 'tetris-skin';
+let skin = SKINS.retro;
+let COLORS = skin.colors;
 
 const WILD = 8;
 const POWERUP_EVERY = 5;   // cada cuántas líneas aparece un power-up
@@ -88,9 +177,11 @@ const overlayRank = document.getElementById('overlay-rank');
 const nameForm = document.getElementById('name-form');
 const nameInput = document.getElementById('name-input');
 const resetRecordsBtn = document.getElementById('reset-records-btn');
+const skinSelect = document.getElementById('skin-select');
 
 const THEME_KEY = 'tetris-theme';
-let gridColor = '#22222e';
+let themeGrid = '#22222e';
+let gridColor = themeGrid;
 
 const RECORDS_KEY = 'tetris-records';
 const NAME_KEY = 'tetris-name';
@@ -359,15 +450,10 @@ function updateHUD() {
 
 function drawBlock(context, x, y, colorIndex, size, alpha) {
   if (!colorIndex) return;
-  const color = COLORS[colorIndex];
   context.globalAlpha = alpha ?? 1;
-  context.fillStyle = color;
-  context.fillRect(x * size + 1, y * size + 1, size - 2, size - 2);
-  // highlight
-  context.fillStyle = 'rgba(255,255,255,0.12)';
-  context.fillRect(x * size + 1, y * size + 1, size - 2, 4);
+  skin.paint(context, x * size, y * size, size, COLORS[colorIndex]);
   if (colorIndex === WILD) {
-    context.fillStyle = '#7986cb';
+    context.fillStyle = skin.wildMark;
     context.font = `bold ${Math.round(size * 0.6)}px sans-serif`;
     context.textAlign = 'center';
     context.textBaseline = 'middle';
@@ -378,8 +464,7 @@ function drawBlock(context, x, y, colorIndex, size, alpha) {
 
 function drawPowerBlock(context, x, y, power, size, alpha) {
   context.globalAlpha = alpha ?? 1;
-  context.fillStyle = POWERUPS[power].color;
-  context.fillRect(x * size + 1, y * size + 1, size - 2, size - 2);
+  skin.paint(context, x * size, y * size, size, POWERUPS[power].color);
   context.font = `${Math.round(size * 0.6)}px sans-serif`;
   context.textAlign = 'center';
   context.textBaseline = 'middle';
@@ -636,7 +721,8 @@ startLevelSelect.addEventListener('change', () => { startLevel = Number(startLev
 function applyTheme(theme) {
   document.documentElement.dataset.theme = theme;
   themeToggle.checked = theme === 'light';
-  gridColor = getComputedStyle(document.documentElement).getPropertyValue('--grid').trim() || gridColor;
+  themeGrid = getComputedStyle(document.documentElement).getPropertyValue('--grid').trim() || themeGrid;
+  gridColor = skin.grid || themeGrid;
   // el loop está cancelado en pausa/game over: redibujar explícitamente
   if (current && next) { draw(); drawNext(); }
 }
@@ -648,8 +734,36 @@ themeToggle.addEventListener('change', () => {
   themeToggle.blur(); // evita que Space/flechas sigan operando el switch
 });
 
+function applySkin(key) {
+  if (!SKINS[key]) key = 'retro';
+  skin = SKINS[key];
+  COLORS = skin.colors;
+  gridColor = skin.grid || themeGrid;
+  document.documentElement.dataset.skin = key;
+  skinSelect.value = key;
+  // el loop está cancelado en pausa/game over: redibujar explícitamente
+  if (current && next) { draw(); drawNext(); }
+}
+
+for (const [key, s] of Object.entries(SKINS)) {
+  const opt = document.createElement('option');
+  opt.value = key;
+  opt.textContent = s.name;
+  skinSelect.appendChild(opt);
+}
+
+skinSelect.addEventListener('change', () => {
+  try { localStorage.setItem(SKIN_KEY, skinSelect.value); } catch (e) { /* almacenamiento no disponible */ }
+  applySkin(skinSelect.value);
+  skinSelect.blur(); // evita que las flechas sigan operando el selector
+});
+
 let savedTheme = null;
 try { savedTheme = localStorage.getItem(THEME_KEY); } catch (e) { /* ignorar */ }
 applyTheme(savedTheme === 'light' ? 'light' : 'dark');
+
+let savedSkin = null;
+try { savedSkin = localStorage.getItem(SKIN_KEY); } catch (e) { /* ignorar */ }
+applySkin(savedSkin);
 
 init();
