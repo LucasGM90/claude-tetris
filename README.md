@@ -45,6 +45,7 @@ Es una versión jugable del Tetris clásico con todas las mecánicas que esperar
 - **Piezas especiales**: de forma ocasional (10 %) aparece un pentominó (+, U, Y) o una pieza 3×3 hueca; tras un Tetris (4 líneas) la siguiente pieza es un bloque 1×1 de recompensa.
 - **Power-ups**: cada 5 líneas la siguiente pieza es un bloque especial (ver abajo).
 - **Pausa** y **Game Over** con opción de reinicio.
+- **Skins**: selector en la esquina superior izquierda (Retro, Neon, Pastel, Pixel art). Se aplica al instante y se guarda en `localStorage`.
 
 ### Power-ups
 
