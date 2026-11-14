@@ -52,7 +52,7 @@
             <li><kbd>↑</kbd> rotar</li>
             <li><kbd>↓</kbd> bajar</li>
             <li><kbd>Space</kbd> caída</li>
-            <li><kbd>P</kbd> pausa</li>
+            <li><kbd>P</kbd> / <kbd>Esc</kbd> pausa</li>
           </ul>
         </div>
       </aside>
@@ -78,7 +78,22 @@
           <button type="button" id="reset-records-btn">Borrar récords</button>
         </div>
 
-        <button id="restart-btn">Jugar</button>
+        <div id="pause-menu" class="pause-menu">
+          <button id="resume-btn" class="menu-btn">Reanudar</button>
+          <button id="restart-btn" class="menu-btn">Reiniciar</button>
+          <button id="controls-btn" class="menu-btn secondary" aria-expanded="false">Ver controles</button>
+          <ul id="menu-controls" class="menu-controls hidden">
+            <li><kbd>←</kbd><kbd>→</kbd> mover</li>
+            <li><kbd>↑</kbd> / <kbd>X</kbd> rotar</li>
+            <li><kbd>↓</kbd> bajar</li>
+            <li><kbd>Space</kbd> caída</li>
+            <li><kbd>P</kbd> / <kbd>Esc</kbd> pausa</li>
+          </ul>
+          <label class="level-select">Nivel inicial
+            <select id="start-level"></select>
+          </label>
+          <span class="menu-hint">Se aplica a la próxima partida</span>
+        </div>
       </div>
     </div>
   </div>

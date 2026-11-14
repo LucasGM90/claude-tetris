@@ -69,6 +69,11 @@ const overlay = document.getElementById('overlay');
 const overlayTitle = document.getElementById('overlay-title');
 const overlayScore = document.getElementById('overlay-score');
 const restartBtn = document.getElementById('restart-btn');
+const resumeBtn = document.getElementById('resume-btn');
+const controlsBtn = document.getElementById('controls-btn');
+const menuControls = document.getElementById('menu-controls');
+const pauseMenu = document.getElementById('pause-menu');
+const startLevelEl = document.getElementById('start-level');
 const powerupEl = document.getElementById('powerup');
 const themeToggle = document.getElementById('theme-toggle');
 const nameForm = document.getElementById('name-form');
@@ -82,9 +87,11 @@ const RECORDS_KEY = 'tetris-records';
 const MAX_RECORDS = 5;
 const DEFAULT_NAME = 'Anónimo';
 
+const MAX_START_LEVEL = 10;
 const THEME_KEY = 'tetris-theme';
 let gridColor = '#22222e';
 
+let startLevel = 1; // nivel con el que arranca la próxima partida
 let started = false, combo, runBestCombo, pendingEntry, rewardSingle, board, current, next, score, lines, level, paused, gameOver, lastTime, dropAccum, dropInterval, animId, nextPowerupAt, freezeLeft, powerMsg;
 
 // ---- Récords (localStorage) ----
@@ -161,6 +168,10 @@ function commitPendingEntry() {
   pendingEntry = null;
   nameForm.classList.add('hidden');
   renderRecords();
+}
+
+function dropIntervalFor(lvl) {
+  return Math.max(100, 1000 - (lvl - 1) * 90);
 }
 
 function createBoard() {
@@ -258,8 +269,8 @@ function clearLines() {
     lines += cleared;
     if (cleared === 4) rewardSingle = true;
     score += (LINE_SCORES[cleared] || 0) * level;
-    level = Math.floor(lines / 10) + 1;
-    dropInterval = Math.max(100, 1000 - (level - 1) * 90);
+    level = startLevel + Math.floor(lines / 10);
+    dropInterval = dropIntervalFor(level);
     updateHUD();
   } else {
     combo = 0;
@@ -504,6 +515,8 @@ function togglePause() {
   if (gameOver || !started) return;
   paused = !paused;
   if (!paused) {
+    overlay.classList.add('hidden');
+    if (document.activeElement) document.activeElement.blur(); // Space no debe activar un botón del menú
     lastTime = performance.now();
     loop(lastTime);
   } else {
@@ -511,8 +524,13 @@ function togglePause() {
     overlayTitle.textContent = 'PAUSA';
     overlayScore.textContent = '';
     recordsBox.classList.add('hidden');
+    pauseMenu.classList.remove('game-over');
+    menuControls.classList.add('hidden');
+    controlsBtn.setAttribute('aria-expanded', 'false');
+    startLevelEl.value = startLevel;
     restartBtn.textContent = 'Reiniciar';
     overlay.classList.remove('hidden');
+    resumeBtn.focus();
   }
 }
 
@@ -548,10 +566,10 @@ function init() {
   board = createBoard();
   score = 0;
   lines = 0;
-  level = 1;
+  level = startLevel;
   paused = false;
   gameOver = false;
-  dropInterval = 1000;
+  dropInterval = dropIntervalFor(level);
   dropAccum = 0;
   nextPowerupAt = POWERUP_EVERY;
   freezeLeft = 0;
@@ -567,8 +585,8 @@ function init() {
 }
 
 document.addEventListener('keydown', e => {
-  if (e.code === 'KeyP') { togglePause(); return; }
-  if (!started || paused || gameOver) return;
+  if (e.code === 'KeyP' || e.code === 'Escape') { togglePause(); return; }
+  if (!started || paused || gameOver) return; // menú abierto, sin empezar o partida terminada
   switch (e.code) {
     case 'ArrowLeft':
       if (!collide(current.shape, current.x - 1, current.y)) current.x--;
@@ -592,8 +610,8 @@ document.addEventListener('keydown', e => {
 });
 
 restartBtn.addEventListener('click', () => {
+  if (document.activeElement) document.activeElement.blur(); // evita que Space (hard drop) vuelva a pulsar el botón
   init();
-  restartBtn.blur(); // evita que Space (hard drop) vuelva a pulsar el botón
 });
 
 nameForm.addEventListener('submit', e => {
@@ -608,6 +626,17 @@ resetRecordsBtn.addEventListener('click', () => {
   saveRecords();
   renderRecords();
   resetRecordsBtn.blur();
+});
+
+resumeBtn.addEventListener('click', togglePause);
+controlsBtn.addEventListener('click', () => {
+  const open = menuControls.classList.toggle('hidden') === false;
+  controlsBtn.setAttribute('aria-expanded', String(open));
+});
+for (let l = 1; l <= MAX_START_LEVEL; l++) startLevelEl.add(new Option(l, l));
+startLevelEl.addEventListener('change', () => {
+  startLevel = Number(startLevelEl.value);
+  startLevelEl.blur();
 });
 
 function applyTheme(theme) {
