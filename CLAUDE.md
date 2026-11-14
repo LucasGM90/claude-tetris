@@ -25,6 +25,7 @@ There is no build or test command; verify changes by playing in the browser.
 - `loop()` runs on `requestAnimationFrame` and accumulates `dropAccum` against `dropInterval`. Pause and game over stop it with `cancelAnimationFrame(animId)`; resuming calls `loop()` again with a fresh `lastTime`.
 - One `#overlay` element is reused for both PAUSA and GAME OVER; its text is set in `togglePause()` and `endGame()`.
 - HUD DOM updates only happen in `updateHUD()`.
+- **Records**: persisted in `localStorage` under `tetris-records` (`{scores:[{name,score,lines}], bestCombo, maxLines}`), loaded into `records`. The page starts on a start screen (`showStart()`, `started=false`, loop not running) that reuses `#overlay`; `endGame()` sets `pendingEntry` when the score qualifies (`recordRank`) and shows the name form; `commitPendingEntry()` saves it (also called from `init()`, so restarting without submitting stores it as "Anónimo"). `combo` counts consecutive locks that clear lines.
 
 ## Coupled values
 
